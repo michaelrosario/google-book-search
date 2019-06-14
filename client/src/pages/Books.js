@@ -27,7 +27,7 @@ class Books extends Component {
   };
 
   componentDidMount() {
-    this.nameInput.focus(); 
+    
   }
 
 
@@ -98,7 +98,6 @@ class Books extends Component {
                 onChange={this.handleInputChange}
                 name="title"
                 placeholder="Search for a book..."
-                ref={(input) => { this.nameInput = input; }} 
               />
               <FormBtn
                 disabled={!this.state.title}
