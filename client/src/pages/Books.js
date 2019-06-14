@@ -27,22 +27,9 @@ class Books extends Component {
   };
 
   componentDidMount() {
-    //this.loadBooks();
+    this.nameInput.focus(); 
   }
 
-  loadBooks = () => {
-    API.getBooks()
-      .then(res =>
-        this.setState({ books: res.data, title: "", author: "", synopsis: "" })
-      )
-      .catch(err => console.log(err));
-  };
-
-  deleteBook = id => {
-    API.deleteBook(id)
-      .then(res => this.loadBooks())
-      .catch(err => console.log(err));
-  };
 
   saveBook = index => {
 
@@ -111,6 +98,7 @@ class Books extends Component {
                 onChange={this.handleInputChange}
                 name="title"
                 placeholder="Search for a book..."
+                ref={(input) => { this.nameInput = input; }} 
               />
               <FormBtn
                 disabled={!this.state.title}
