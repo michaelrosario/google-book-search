@@ -85,6 +85,7 @@ class Books extends Component {
         .then(res => {
           console.log("book",res.data.items);
           this.setState({
+            title: '',
             books: res.data.items
           });
         })
