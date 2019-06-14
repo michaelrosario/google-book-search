@@ -21,30 +21,27 @@ const viewBook = {
 class Books extends Component {
   state = {
     books: [],
-    title: "",
-    author: "",
-    synopsis: ""
+    savedBooks: [],
+    title: ""
   };
 
   componentDidMount() {
-    
+    this.loadBooks(); // get all books from DB
   }
 
+  loadBooks = () => {
+    API.getBooks()
+      .then(res =>
+        this.setState({ savedBooks: res.data })
+      )
+      .catch(err => console.log(err));
+  };
 
   saveBook = index => {
 
-    const book = this.state.books[index].volumeInfo;
-    
-    let bookImage = book.imageLinks.thumbnail || '';
-
     const data = {
-      title: book.title,
-      authors: book.authors,
-      description: book.description,
-      image: bookImage,
-      link: book.infoLink
+      ...this.state.books[index]
     };
-
 
     API.saveBook(data)
       .then(res => {
@@ -54,6 +51,20 @@ class Books extends Component {
         books[index]._id = res.data._id;
         this.setState({ books });
         
+      })
+      .catch(err => console.log(err));
+  };
+
+  deleteBook = (id,index) => {
+    API.deleteBook(id)
+      .then(res => {
+        this.loadBooks();
+
+        // Update state on removal
+        const books = this.state.books;
+        delete books[index]._id;
+        this.setState({ books });
+
       })
       .catch(err => console.log(err));
   };
@@ -70,10 +81,32 @@ class Books extends Component {
     if (this.state.title) {
       BooksAPI.searchBook(this.state.title)
         .then(res => {
-          console.log("book",res.data.items);
+
+          // create an array of all the data we need
+          const books = res.data.items.map(data => {
+            const book = {};
+            let bookImage = data.volumeInfo.imageLinks ? data.volumeInfo.imageLinks.thumbnail : '';
+            book.id = data.id;
+            const checkId = obj => obj.id === book.id;
+            const alreadySaved = this.state.savedBooks.filter(checkId);
+            if(alreadySaved.length){
+              console.log("alreadySaved",alreadySaved);
+              book._id = alreadySaved[0]._id;
+            }       
+            book.title = data.volumeInfo.title;
+            book.authors = data.volumeInfo.authors;
+            book.description = data.volumeInfo.description;
+            book.image = bookImage;
+            book.link = data.volumeInfo.infoLink;
+            return book;
+          });
+
+          
+          console.log("book",books);
+
           this.setState({
             title: '',
-            books: res.data.items
+            books
           });
         })
         .catch(err => console.log(err));
@@ -84,7 +117,7 @@ class Books extends Component {
     return (
       <div>
          <Jumbotron>
-              <h1>What Books Should I Read? {process.env.REACT_APP_NOT_SECRET_CODE}</h1>
+              <h1>What Books Should I Read?</h1>
         </Jumbotron>
      
       <Container style={{ maxWidth: 1300 }}>
@@ -116,31 +149,38 @@ class Books extends Component {
                     <Row>
                         <Col size="sm-12">
                           
-                          {book._id ? <Link style={viewBook} to={"/detail/" + book._id}> <i className="fa fa-eye"></i>  View</Link> : ""}
-                          <SaveBtn onClick={() => this.saveBook(index)} />
+                          {book._id ?
+                            <DeleteBtn onClick={() => this.deleteBook(book._id,index)} /> : ""
+                          }
+                          
+                          {book._id ? 
+                            <Link style={viewBook} to={"/detail/" + book._id}> <i className="fa fa-eye"></i>  View</Link> :
+                            <SaveBtn onClick={() => this.saveBook(index)} />
+                          }
+                          
 
                           <h3>
-                            {book.volumeInfo.title}
+                            {book.title}
                           </h3>
                           <p>
-                            Author(s): <em>{book.volumeInfo.authors ? book.volumeInfo.authors.join(", ") : 'No Authors'}</em>
+                            Author(s): <em>{book.authors ? book.authors.join(", ") : 'No Authors'}</em>
                           </p>
                           <br />
                         </Col>
                       </Row>
-                      <Row>
+                      <Row>`
                         <Col size="md-auto sm-10">
-                          {book.volumeInfo.imageLinks ? <img src={book.volumeInfo.imageLinks.thumbnail} alt="" /> : <div className="noImage">No Image</div> }
+                          {book.image ? <img src={book.image} alt="" /> : <div className="noImage">No Image</div> }
                           <br /><br />
                         </Col>
                         <Col size="md-10 sm-10">
                         
                           <p>
                             <strong>Description:</strong><br /> {
-                              book.volumeInfo.description ? 
-                              book.volumeInfo.description.length > 300 ?  
-                              book.volumeInfo.description.substring(0,300)+"..." :
-                              book.volumeInfo.description
+                              book.description ? 
+                              book.description.length > 300 ?  
+                              book.description.substring(0,300)+"..." :
+                              book.description
                               : "No description..."}
                           </p>
 

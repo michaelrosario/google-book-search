@@ -19,10 +19,7 @@ const viewBook = {
 
 class Saved extends Component {
   state = {
-    books: [],
-    title: "",
-    author: "",
-    synopsis: ""
+    books: []
   };
 
   componentDidMount() {
@@ -32,7 +29,7 @@ class Saved extends Component {
   loadBooks = () => {
     API.getBooks()
       .then(res =>
-        this.setState({ books: res.data, title: "", author: "", synopsis: "" })
+        this.setState({ books: res.data })
       )
       .catch(err => console.log(err));
   };
@@ -47,7 +44,7 @@ class Saved extends Component {
     return (
       <div>
          <Jumbotron>
-              <h1>What Books Should I Read? {process.env.REACT_APP_NOT_SECRET_CODE}</h1>
+              <h1>What Books Should I Read?</h1>
         </Jumbotron>
      
         <Container style={{ maxWidth: 1300 }}>
@@ -81,7 +78,11 @@ class Saved extends Component {
                         <Col size="sm-10">
                          
                           <p>
-                            <strong>Description:</strong><br /> {book.description.length > 300 ? book.description.substring(0,300)+"..." : book.description }
+                            <strong>Description:</strong><br /> {
+                              book.description ? 
+                                book.description.length > 300 ? 
+                                book.description.substring(0,300)+"..." : 
+                                book.description : "No Description"}
                           </p>
 
                         </Col>

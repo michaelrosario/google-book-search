@@ -21,6 +21,8 @@ class Detail extends Component {
     const {
       title,
       authors,
+      image,
+      link,
       description
     } = this.state.book;
 
@@ -33,12 +35,16 @@ class Detail extends Component {
         </Jumbotron>
       <Container>
         <Row>
-          <Col size="md-12">
+          <Col size="md-auto">
+            <img src={image} alt={title} /><br/><br/>
+          </Col>
+          <Col size="md-10">
             <article>
               <h5>Description</h5>
               <p>
                 {description}
               </p>
+              <a href={link} target="_blank">View on Google Books</a><br /><br />
             </article>
           </Col>
         </Row>
