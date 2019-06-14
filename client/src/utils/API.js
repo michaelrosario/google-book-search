@@ -1,7 +1,5 @@
 import axios from "axios";
 
-/* AIzaSyB2USCm6t-nTUlmtjRARD4Rc_N5I4pS7AA */
-
 export default {
   // Gets all books
   getBooks: function() {

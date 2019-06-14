@@ -17,33 +17,38 @@ class Detail extends Component {
   }
 
   render() {
+
+    const {
+      title,
+      authors,
+      description
+    } = this.state.book;
+
     return (
-      <Container fluid>
+      <div>
+        <Jumbotron>
+          <h1>
+            {title} by {authors ? authors.join(", ") : "No Author"}
+          </h1>
+        </Jumbotron>
+      <Container>
         <Row>
           <Col size="md-12">
-            <Jumbotron>
-              <h1>
-                {this.state.book.title} by {this.state.book.author}
-              </h1>
-            </Jumbotron>
-          </Col>
-        </Row>
-        <Row>
-          <Col size="md-10 md-offset-1">
             <article>
-              <h1>Synopsis</h1>
+              <h5>Description</h5>
               <p>
-                {this.state.book.synopsis}
+                {description}
               </p>
             </article>
           </Col>
         </Row>
         <Row>
-          <Col size="md-2">
-            <Link to="/">← Back to Authors</Link>
+          <Col size="md-10">
+            <Link to="/saved">← Back to Saved Articles</Link>
           </Col>
         </Row>
       </Container>
+    </div>
     );
   }
 }

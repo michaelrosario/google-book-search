@@ -1,0 +1,8 @@
+.save-btn {
+  float: right;
+  color: rgb(0, 147, 0);
+  border: 1px solid rgb(0, 147, 0);
+  padding: 5px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}

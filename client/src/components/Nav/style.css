@@ -1,0 +1,11 @@
+nav { 
+  background: rgba(0,0,0,0.8);
+  position: fixed !important;
+  top: 0px;
+  width: 100%;
+  zIndex: 99;
+}
+
+nav a {
+  color: #FFF;
+}

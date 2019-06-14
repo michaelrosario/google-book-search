@@ -1,11 +1,22 @@
 import React, { Component } from "react";
 import DeleteBtn from "../components/DeleteBtn";
+import SaveBtn from "../components/SaveBtn";
 import Jumbotron from "../components/Jumbotron";
 import API from "../utils/API";
+import BooksAPI from "../utils/googleBooks";
 import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../components/Grid";
 import { List, ListItem } from "../components/List";
-import { Input, TextArea, FormBtn } from "../components/Form";
+import { Input, FormBtn } from "../components/Form";
+
+const viewBook = {
+  padding: '6px 20px',
+  margin: '0 10px',
+  border: '1px solid #999',
+  borderRadius: '4px',
+  float: 'right',
+  textDecoration: 'none'
+}
 
 class Books extends Component {
   state = {
@@ -16,7 +27,7 @@ class Books extends Component {
   };
 
   componentDidMount() {
-    this.loadBooks();
+    //this.loadBooks();
   }
 
   loadBooks = () => {
@@ -33,6 +44,33 @@ class Books extends Component {
       .catch(err => console.log(err));
   };
 
+  saveBook = index => {
+
+    const book = this.state.books[index].volumeInfo;
+    
+    let bookImage = book.imageLinks.thumbnail || '';
+
+    const data = {
+      title: book.title,
+      authors: book.authors,
+      description: book.description,
+      image: bookImage,
+      link: book.infoLink
+    };
+
+
+    API.saveBook(data)
+      .then(res => {
+        //console.log("res",res);
+
+        const books = this.state.books;
+        books[index]._id = res.data._id;
+        this.setState({ books });
+        
+      })
+      .catch(err => console.log(err));
+  };
+
   handleInputChange = event => {
     const { name, value } = event.target;
     this.setState({
@@ -42,66 +80,85 @@ class Books extends Component {
 
   handleFormSubmit = event => {
     event.preventDefault();
-    if (this.state.title && this.state.author) {
-      API.saveBook({
-        title: this.state.title,
-        author: this.state.author,
-        synopsis: this.state.synopsis
-      })
-        .then(res => this.loadBooks())
+    if (this.state.title) {
+      BooksAPI.searchBook(this.state.title)
+        .then(res => {
+          console.log("book",res.data.items);
+          this.setState({
+            books: res.data.items
+          });
+        })
         .catch(err => console.log(err));
     }
   };
 
   render() {
     return (
-      <Container fluid>
+      <div>
+         <Jumbotron>
+              <h1>What Books Should I Read? {process.env.REACT_APP_NOT_SECRET_CODE}</h1>
+        </Jumbotron>
+     
+      <Container style={{ maxWidth: 1300 }}>
+       
         <Row>
-          <Col size="md-6">
-            <Jumbotron>
-              <h1>What Books Should I Read?</h1>
-            </Jumbotron>
+          <Col size="md-12">
+           
             <form>
               <Input
                 value={this.state.title}
                 onChange={this.handleInputChange}
                 name="title"
-                placeholder="Title (required)"
-              />
-              <Input
-                value={this.state.author}
-                onChange={this.handleInputChange}
-                name="author"
-                placeholder="Author (required)"
-              />
-              <TextArea
-                value={this.state.synopsis}
-                onChange={this.handleInputChange}
-                name="synopsis"
-                placeholder="Synopsis (Optional)"
+                placeholder="Search for a book..."
               />
               <FormBtn
-                disabled={!(this.state.author && this.state.title)}
+                disabled={!this.state.title}
                 onClick={this.handleFormSubmit}
               >
-                Submit Book
+                Search
               </FormBtn>
             </form>
           </Col>
-          <Col size="md-6 sm-12">
-            <Jumbotron>
-              <h1>Books On My List</h1>
-            </Jumbotron>
+          <Col size="md-12 sm-12">
+            <h5>Results</h5><br />
             {this.state.books.length ? (
               <List>
-                {this.state.books.map(book => (
-                  <ListItem key={book._id}>
-                    <Link to={"/books/" + book._id}>
-                      <strong>
-                        {book.title} by {book.author}
-                      </strong>
-                    </Link>
-                    <DeleteBtn onClick={() => this.deleteBook(book._id)} />
+                {this.state.books.map((book,index) => (
+                  <ListItem key={'book'+index}>
+                    <Row>
+                        <Col size="sm-12">
+                          
+                          {book._id ? <Link style={viewBook} to={"/detail/" + book._id}> <i className="fa fa-eye"></i>  View</Link> : ""}
+                          <SaveBtn onClick={() => this.saveBook(index)} />
+
+                          <h3>
+                            {book.volumeInfo.title}
+                          </h3>
+                          <p>
+                            Author(s): <em>{book.volumeInfo.authors ? book.volumeInfo.authors.join(", ") : 'No Authors'}</em>
+                          </p>
+                          <br />
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col size="md-auto sm-10">
+                          {book.volumeInfo.imageLinks ? <img src={book.volumeInfo.imageLinks.thumbnail} alt="" /> : <div className="noImage">No Image</div> }
+                          <br /><br />
+                        </Col>
+                        <Col size="md-10 sm-10">
+                        
+                          <p>
+                            <strong>Description:</strong><br /> {
+                              book.volumeInfo.description ? 
+                              book.volumeInfo.description.length > 300 ?  
+                              book.volumeInfo.description.substring(0,300)+"..." :
+                              book.volumeInfo.description
+                              : "No description..."}
+                          </p>
+
+                        </Col>
+                      </Row>
+
                   </ListItem>
                 ))}
               </List>
@@ -111,6 +168,7 @@ class Books extends Component {
           </Col>
         </Row>
       </Container>
+      </div>
     );
   }
 }
