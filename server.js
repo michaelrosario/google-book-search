@@ -30,9 +30,12 @@ app.use(routes);
 console.log("process.env",process.env);
 
 // Connect to the Mongo DB
-if (environment === "development") {
+if (environment === "production") {
+  mongoose.connect(process.env.MONGODB_URI);
+} else {
   mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/googlebooks", { useNewUrlParser: true });
-}
+} 
+
 // Start the API server
 app.listen(PORT, function() {
   console.log(`🌎  ==> API Server now listening on PORT ${PORT}!`);
