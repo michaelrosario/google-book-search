@@ -32,7 +32,7 @@ class Books extends Component {
     this.loadBooks(); // get all books from DB
     const { endpoint } = this.state;
     const socket = socketIOClient(endpoint);
-    socket.on("FromAPI", data => this.setState({ response: data }));
+    socket.on("FromAPI", data => this.setState({ response: data.title }));
   }
 
   loadBooks = () => {
@@ -56,7 +56,7 @@ class Books extends Component {
         this.setState({ books });
         const { endpoint } = this.state;
         const socket = socketIOClient(endpoint);
-        socket.emit("FromAPI", books[index].title);
+        socket.emit("FromAPI",{ title: books[index].title });
         
       })
       .catch(err => console.log(err));
