@@ -7,14 +7,14 @@ const PORT = process.env.PORT || 3001;
 // Define middleware here
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
-const getApiAndEmit = "TODO"
-let interval;
+//const getApiAndEmit = "TODO"
+//let interval;
 io.on("connection", socket => {
   console.log("New client connected");
-  if (interval) {
+  /*if (interval) {
     clearInterval(interval);
-  }
-  interval = setInterval(() => getApiAndEmit(socket), 10000);
+  }*/
+  //interval = setInterval(() => getApiAndEmit(socket), 10000);
   socket.on("FromAPI", (data)=>{
     //Here we broadcast it out to all other sockets EXCLUDING the socket which sent us the data
    console.log(data);
