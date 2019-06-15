@@ -24,7 +24,7 @@ class Books extends Component {
     books: [],
     savedBooks: [],
     title: "",
-    endpoint: "//localhost:3001",
+    endpoint: "https://stark-sands-82717.herokuapp.com/",
     response: false
   };
 
@@ -56,7 +56,7 @@ class Books extends Component {
         this.setState({ books });
         const { endpoint } = this.state;
         const socket = socketIOClient(endpoint);
-        socket.emit("FromAPI", books[index].title)
+        socket.emit("FromAPI", books[index].title);
         
       })
       .catch(err => console.log(err));

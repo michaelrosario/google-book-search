@@ -15,6 +15,10 @@ io.on("connection", socket => {
     clearInterval(interval);
   }
   interval = setInterval(() => getApiAndEmit(socket), 10000);
+  socket.on("FromAPI", (data)=>{
+    //Here we broadcast it out to all other sockets EXCLUDING the socket which sent us the data
+   console.log(data);
+} ); 
   socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
