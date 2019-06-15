@@ -24,7 +24,7 @@ class Books extends Component {
     books: [],
     savedBooks: [],
     title: "",
-    endpoint: "http://localhost:3000",
+    endpoint: "//localhost:3001",
     response: false
   };
 
@@ -121,6 +121,9 @@ class Books extends Component {
   };
 
   render() {
+
+    const socket = socketIOClient(this.state.endpoint);
+
     return (
       <div>
          <Jumbotron>
