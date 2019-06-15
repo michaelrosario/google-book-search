@@ -8,7 +8,6 @@ import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../components/Grid";
 import { List, ListItem } from "../components/List";
 import { Input, FormBtn } from "../components/Form";
-import socketIOClient from "socket.io-client";
 
 const viewBook = {
   padding: '6px 20px',
@@ -23,16 +22,11 @@ class Books extends Component {
   state = {
     books: [],
     savedBooks: [],
-    title: "",
-    endpoint: "https://stark-sands-82717.herokuapp.com/",
-    response: false
+    title: ""
   };
 
   componentDidMount() {
     this.loadBooks(); // get all books from DB
-    const { endpoint } = this.state;
-    const socket = socketIOClient(endpoint);
-    socket.on("FromAPI", data => this.setState({ response: data.title }));
   }
 
   loadBooks = () => {
@@ -50,14 +44,9 @@ class Books extends Component {
     API.saveBook(data)
       .then(res => {
         //console.log("res",res);
-
         const books = this.state.books;
         books[index]._id = res.data._id;
-        this.setState({ books });
-        const { endpoint } = this.state;
-        const socket = socketIOClient(endpoint);
-        socket.emit("FromAPI",{ title: books[index].title });
-        
+        this.setState({ books });        
       })
       .catch(err => console.log(err));
   };
@@ -121,8 +110,6 @@ class Books extends Component {
   };
 
   render() {
-
-    const socket = socketIOClient(this.state.endpoint);
 
     return (
       <div>
