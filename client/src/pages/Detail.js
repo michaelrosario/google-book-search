@@ -44,7 +44,7 @@ class Detail extends Component {
               <p>
                 {description}
               </p>
-              <a href={link} target="_blank">View on Google Books</a><br /><br />
+              <a href={link} target="_blank" rel="noopener noreferrer">View on Google Books</a><br /><br />
             </article>
           </Col>
         </Row>

@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../components/Grid";
 import { List, ListItem } from "../components/List";
 import { Input, FormBtn } from "../components/Form";
+import socketIOClient from "socket.io-client";
 
 const viewBook = {
   padding: '6px 20px',
@@ -22,18 +23,21 @@ class Books extends Component {
   state = {
     books: [],
     savedBooks: [],
-    title: ""
+    title: "",
+    endpoint: "http://localhost:3000",
+    response: false
   };
 
   componentDidMount() {
     this.loadBooks(); // get all books from DB
+    const { endpoint } = this.state;
+    const socket = socketIOClient(endpoint);
+    socket.on("FromAPI", data => this.setState({ response: data }));
   }
 
   loadBooks = () => {
     API.getBooks()
-      .then(res =>
-        this.setState({ savedBooks: res.data })
-      )
+      .then(res => this.setState({ savedBooks: res.data }))
       .catch(err => console.log(err));
   };
 
@@ -50,6 +54,9 @@ class Books extends Component {
         const books = this.state.books;
         books[index]._id = res.data._id;
         this.setState({ books });
+        const { endpoint } = this.state;
+        const socket = socketIOClient(endpoint);
+        socket.emit("FromAPI", books[index].title)
         
       })
       .catch(err => console.log(err));
@@ -90,7 +97,7 @@ class Books extends Component {
             const checkId = obj => obj.id === book.id;
             const alreadySaved = this.state.savedBooks.filter(checkId);
             if(alreadySaved.length){
-              console.log("alreadySaved",alreadySaved);
+              //console.log("alreadySaved",alreadySaved);
               book._id = alreadySaved[0]._id;
             }       
             book.title = data.volumeInfo.title;
@@ -102,10 +109,10 @@ class Books extends Component {
           });
 
           
-          console.log("book",books);
+          //console.log("book",books);
 
           this.setState({
-            title: '',
+            title: '', // empty search
             books
           });
         })
@@ -117,7 +124,10 @@ class Books extends Component {
     return (
       <div>
          <Jumbotron>
-              <h1>What Books Should I Read?</h1>
+              <h1>
+                What Books Should I Read?
+                {this.state.response ? "received" : "..."}
+              </h1>
         </Jumbotron>
      
       <Container style={{ maxWidth: 1300 }}>

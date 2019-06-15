@@ -5,21 +5,27 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Define middleware here
-/*
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
-io.on('connection', function(socket){
-  console.log('a user connected');
-  socket.on('disconnect', function(){
-    console.log('user disconnected');
+const getApiAndEmit = "TODO"
+let interval;
+io.on("connection", socket => {
+  console.log("New client connected");
+  if (interval) {
+    clearInterval(interval);
+  }
+  interval = setInterval(() => getApiAndEmit(socket), 10000);
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
   });
 });
-*/
+
 
 const environment = process.env.NODE_ENV || "development";
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
 // Serve up static assets (usually on heroku)
 if (environment === "production") {
   app.use(express.static("client/build"));
@@ -27,7 +33,7 @@ if (environment === "production") {
 // Add routes, both API and view
 app.use(routes);
 
-console.log("process.env",process.env);
+//console.log("process.env",process.env);
 
 // Connect to the Mongo DB
 if (environment === "production") {

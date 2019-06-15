@@ -4,20 +4,23 @@ import Jumbotron from "../components/Jumbotron";
 
 function NoMatch() {
   return (
-    <Container fluid>
-      <Row>
-        <Col size="md-12">
-          <Jumbotron>
+    <div>
+      <Jumbotron>
             <h1>404 Page Not Found</h1>
             <h1>
               <span role="img" aria-label="Face With Rolling Eyes Emoji">
                 🙄
               </span>
             </h1>
-          </Jumbotron>
+      </Jumbotron>
+      <Container>
+      <Row>
+        <Col size="md-12">
+          
         </Col>
       </Row>
     </Container>
+    </div>
   );
 }
 
