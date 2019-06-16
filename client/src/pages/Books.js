@@ -8,6 +8,8 @@ import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../components/Grid";
 import { List, ListItem } from "../components/List";
 import { Input, FormBtn } from "../components/Form";
+import socketIOClient from 'socket.io-client';
+import 'font-awesome/css/font-awesome.min.css';
 
 const viewBook = {
   padding: '6px 20px',
@@ -18,22 +20,77 @@ const viewBook = {
   textDecoration: 'none'
 }
 
+const styleShow = {
+  padding: '6px 20px',
+  position: 'fixed',
+  width: '100%',
+  zIndex: "999",
+  bottom: 0,
+  textAlign: 'center',
+  color: "#FFF",
+  fontWeight: "bold",
+  margin: '0 10px',
+  border: '1px solid #999',
+  left: -10,
+  borderRadius: 0,
+  borderRadius: '4px',
+  float: 'right',
+  textDecoration: 'none',
+  transition: 'all linear .03s',
+  backgroundColor: 'rgba(0, 128, 128, 0.8)'
+}
+
+const styleHide = {
+  transition: 'all linear .03s',
+  padding: '6px 20px',
+  position: 'fixed',
+  width: '100%',
+  textAlign: 'center',
+  zIndex: "999",
+  bottom: -50,
+  color: "#FFF",
+  fontWeight: "bold",
+  margin: '0 10px',
+  border: '1px solid #999',
+  borderRadius: '4px',
+  float: 'right',
+  textDecoration: 'none',
+  backgroundColor: 'rgba(0, 128, 128, 0.8)',
+  left: -10,
+  borderRadius: 0
+}
+
 class Books extends Component {
   state = {
     books: [],
     savedBooks: [],
-    title: ""
+    title: "",
+    alert: "",
+    endpoint: "https://stark-sands-82717.herokuapp.com:3001",
   };
 
   componentDidMount() {
-    this.loadBooks(); // get all books from DB
+    this.loadBooks(); // get all books from DB  
+    const socket = socketIOClient(this.state.endpoint);
+    socket.on('fromServer', title => {
+      //console.log("fromServer",title.data);
+      this.showAlert(title.data);
+    }); 
+  }
+
+  showAlert = message => {
+    //console.log("message",message);
+    this.setState({ alert: message });
+    setInterval(() => {
+      this.setState({ alert: "" });
+    }, 3000);
   }
 
   loadBooks = () => {
     API.getBooks()
       .then(res => this.setState({ savedBooks: res.data }))
       .catch(err => console.log(err));
-  };
+  }; 
 
   saveBook = index => {
 
@@ -46,6 +103,11 @@ class Books extends Component {
         //console.log("res",res);
         const books = this.state.books;
         books[index]._id = res.data._id;
+        
+        // send to socket
+        const socket = socketIOClient(this.state.endpoint);
+        socket.emit('fromReact',{ data: res.data.title });
+        
         this.setState({ books });        
       })
       .catch(err => console.log(err));
@@ -111,6 +173,8 @@ class Books extends Component {
 
   render() {
 
+    const socket = socketIOClient(this.state.endpoint);
+
     return (
       <div>
          <Jumbotron>
@@ -118,7 +182,7 @@ class Books extends Component {
                 What Books Should I Read?
               </h1>
         </Jumbotron>
-     
+
       <Container style={{ maxWidth: 1300 }}>
        
         <Row>
@@ -195,6 +259,11 @@ class Books extends Component {
           </Col>
         </Row>
       </Container>
+
+      <div style={this.state.alert ? styleShow : styleHide}>
+        <i className="fa fa-save"></i> &nbsp; Book Saved - <u><em>{this.state.alert}</em></u>
+      </div>
+
       </div>
     );
   }
