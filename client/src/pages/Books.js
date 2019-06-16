@@ -116,7 +116,6 @@ class Books extends Component {
          <Jumbotron>
               <h1>
                 What Books Should I Read?
-                {this.state.response ? "received" : "..."}
               </h1>
         </Jumbotron>
      

@@ -6,9 +6,9 @@ import "./style.css";
 function Nav() {
   return (
     <nav className="navbar navbar-inverse">
-      <a className="navbar-brand" href="/">
+      <NavLink to="/" className="navbar-brand" exact>
        Google Books Search API
-      </a>
+      </NavLink>
       <ul className="nav navbar-right">
         <li className="nav-item">
           <NavLink to="/saved" exact activeStyle={{ color: 'red' }}>
