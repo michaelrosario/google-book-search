@@ -66,12 +66,12 @@ class Books extends Component {
     savedBooks: [],
     title: "",
     alert: "",
-    endpoint: "https://stark-sands-82717.herokuapp.com:3001",
+    endpoint: "https://stark-sands-82717.herokuapp.com/",
   };
 
   componentDidMount() {
     this.loadBooks(); // get all books from DB  
-    const socket = socketIOClient(this.state.endpoint);
+    const socket = socketIOClient(this.state.endpoint, {secure: true});
     socket.on('fromServer', title => {
       //console.log("fromServer",title.data);
       this.showAlert(title.data);
@@ -105,7 +105,7 @@ class Books extends Component {
         books[index]._id = res.data._id;
         
         // send to socket
-        const socket = socketIOClient(this.state.endpoint);
+        const socket = socketIOClient(this.state.endpoint, {secure: true});
         socket.emit('fromReact',{ data: res.data.title });
         
         this.setState({ books });        
@@ -173,7 +173,7 @@ class Books extends Component {
 
   render() {
 
-    const socket = socketIOClient(this.state.endpoint);
+    const socket = socketIOClient(this.state.endpoint, {secure: true});
 
     return (
       <div>
