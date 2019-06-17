@@ -47,6 +47,12 @@ class Saved extends Component {
     }); 
   }
 
+  componentWillUnmount(){
+    const socket = socketIOClient(this.state.endpoint, { secure: true });
+    socket.off("fromServer");
+    socket.off("Delete");
+  }
+
   showAlert = (message,type) => {
     //console.log("message",message);
     this.loadBooks(); 
