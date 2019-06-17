@@ -2,9 +2,11 @@ import React, { Component } from "react";
 import DeleteBtn from "../components/DeleteBtn";
 import Jumbotron from "../components/Jumbotron";
 import API from "../utils/API";
+import Message from "../components/Message";
 import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../components/Grid";
 import { List, ListItem } from "../components/List";
+import socketIOClient from 'socket.io-client';
 import 'font-awesome/css/font-awesome.min.css';
 import { NONAME } from "dns";
 
@@ -19,11 +21,27 @@ const viewBook = {
 
 class Saved extends Component {
   state = {
-    books: []
+    books: [],
+    alert,
+    endpoint: "/"
   };
 
   componentDidMount() {
-    this.loadBooks();
+    this.loadBooks(); // get all books from DB  
+    const socket = socketIOClient(this.state.endpoint, { secure: true });
+    socket.on('fromServer', title => {
+      //console.log("fromServer",title.data);
+      this.showAlert(title.data);
+    }); 
+  }
+
+  showAlert = message => {
+    //console.log("message",message);
+    this.loadBooks(); 
+    this.setState({ alert: message });
+    setInterval(() => {
+      this.setState({ alert: "" });
+    }, 3000);
   }
 
   loadBooks = () => {
@@ -97,6 +115,7 @@ class Saved extends Component {
           </Col>
         </Row>
       </Container>
+      <Message message={this.state.alert}  />
     </div>
     );
   }
