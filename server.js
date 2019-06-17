@@ -29,14 +29,16 @@ if (environment === "production") {
   mongoose.connect(process.env.MONGODB_URI);
 } else {
   mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/googlebooks", { useNewUrlParser: true });
-} 
+}
 
+// Sockets
 io.on('connection', socket => {
-  socket.on('bookTitle', title => {
-    console.log("bookTitle",title);
-    socket.broadcast.emit('bookTitle', { data : title.data });
+  socket.on('fromReact', title => {
+    console.log("fromReact",title);
+    socket.broadcast.emit('fromServer', { data : title.data });
   });
 });
+
 
 // Start the API server
 http.listen(PORT, function() {
