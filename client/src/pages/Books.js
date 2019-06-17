@@ -66,7 +66,7 @@ class Books extends Component {
     savedBooks: [],
     title: "",
     alert: "",
-    endpoint: "https://stark-sands-82717.herokuapp.com/:"+process.env.PORT,
+    endpoint: "/",
   };
 
   componentDidMount() {
