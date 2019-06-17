@@ -36,18 +36,18 @@ const styleShow = {
   borderRadius: '4px',
   float: 'right',
   textDecoration: 'none',
-  transition: 'all linear .03s',
+  transition: 'all linear .07s',
   backgroundColor: 'rgba(0, 128, 128, 0.8)'
 }
 
 const styleHide = {
-  transition: 'all linear .03s',
+  transition: 'all linear .07s',
   padding: '6px 20px',
   position: 'fixed',
   width: '100%',
   textAlign: 'center',
   zIndex: "999",
-  bottom: -50,
+  bottom: -40,
   color: "#FFF",
   fontWeight: "bold",
   margin: '0 10px',
@@ -66,20 +66,19 @@ class Books extends Component {
     savedBooks: [],
     title: "",
     alert: "",
-    endpoint: "/",
   };
 
   componentDidMount() {
     this.loadBooks(); // get all books from DB  
-    const socket = socketIOClient(this.state.endpoint, {secure: true});
+    const socket = socketIOClient();
     socket.on('fromServer', title => {
-      //console.log("fromServer",title.data);
+      console.log("fromServer",title.data);
       this.showAlert(title.data);
     }); 
   }
 
   showAlert = message => {
-    //console.log("message",message);
+    console.log("message",message);
     this.setState({ alert: message });
     setInterval(() => {
       this.setState({ alert: "" });
@@ -105,7 +104,7 @@ class Books extends Component {
         books[index]._id = res.data._id;
         
         // send to socket
-        const socket = socketIOClient(this.state.endpoint, {secure: true});
+        const socket = socketIOClient();
         socket.emit('fromReact',{ data: res.data.title });
         
         this.setState({ books });        
@@ -173,7 +172,7 @@ class Books extends Component {
 
   render() {
 
-    const socket = socketIOClient(this.state.endpoint, {secure: true});
+    const socket = socketIOClient();
 
     return (
       <div>
@@ -261,7 +260,7 @@ class Books extends Component {
       </Container>
 
       <div style={this.state.alert ? styleShow : styleHide}>
-        <i className="fa fa-save"></i> &nbsp; Book Saved - <u><em>{this.state.alert}</em></u>
+        <i className="fa fa-save"></i> &nbsp; <u><em>{this.state.alert}</em></u> was saved ...
       </div>
 
       </div>
