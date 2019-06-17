@@ -41,19 +41,28 @@ class Books extends Component {
     socket.on('Delete', id => { 
       //console.log("Delete",id.data);
       //console.log(this.state.books);
-      const { books } = this.state;
+      const { books, savedBooks } = this.state;
 
-      books.map((book,index) => {
-        if(book._id === id.data){
-           delete books[index]._id;
-           // show deleted message
-           this.showAlert(book.title,"deleted");
-        }
-      });
+      // delete _id if it's inside search results
+      if(books.length){
+        books.map((book,index) => {
+          if(book._id === id.data){
+             delete books[index]._id;
+          }
+        });
+      }
+      
+      // get book title
+      if(savedBooks.length){
+        savedBooks.map((book,index) => {
+          if(book._id === id.data){
+            this.showAlert(book.title,"deleted");
+          }
+        });
+      }
 
-      this.setState({ books });
-
-      this.loadBooks();
+      this.setState({ books, savedBooks });
+      this.loadBooks(); // update saved books
     }); 
   }
 
