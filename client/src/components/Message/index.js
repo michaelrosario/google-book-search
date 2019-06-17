@@ -43,8 +43,8 @@ const styleHide = {
 
 function Message(props) {
   return (
-    <div style={props.alert ? styleShow : styleHide}>
-      <i className="fa fa-save"></i> &nbsp; <u><em>{props.alert}</em></u> was saved ...
+    <div style={props.message ? styleShow : styleHide}>
+      <i className="fa fa-save"></i> &nbsp; <u><em>{props.message}</em></u> was saved ...
     </div>
   );
 }
