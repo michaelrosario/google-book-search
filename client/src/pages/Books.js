@@ -66,11 +66,12 @@ class Books extends Component {
     savedBooks: [],
     title: "",
     alert: "",
+    endpoint: `${location.origin.replace(/^http/, 'ws')}`
   };
 
   componentDidMount() {
     this.loadBooks(); // get all books from DB  
-    const socket = socketIOClient();
+    const socket = socketIOClient(this.state.endpoint);
     socket.on('fromServer', title => {
       console.log("fromServer",title.data);
       this.showAlert(title.data);
@@ -104,7 +105,7 @@ class Books extends Component {
         books[index]._id = res.data._id;
         
         // send to socket
-        const socket = socketIOClient();
+        const socket = socketIOClient(this.state.endpoint);
         socket.emit('fromReact',{ data: res.data.title });
         
         this.setState({ books });        
@@ -172,7 +173,7 @@ class Books extends Component {
 
   render() {
 
-    const socket = socketIOClient();
+    const socket = socketIOClient(this.state.endpoint);
 
     return (
       <div>
