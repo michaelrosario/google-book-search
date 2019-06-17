@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import DeleteBtn from "../components/DeleteBtn";
 import SaveBtn from "../components/SaveBtn";
 import Jumbotron from "../components/Jumbotron";
+import Message from "../components/Message";
 import API from "../utils/API";
 import BooksAPI from "../utils/googleBooks";
 import { Link } from "react-router-dom";
@@ -20,46 +21,6 @@ const viewBook = {
   textDecoration: 'none'
 }
 
-const styleShow = {
-  padding: '6px 20px',
-  position: 'fixed',
-  width: '100%',
-  zIndex: "999",
-  bottom: 0,
-  textAlign: 'center',
-  color: "#FFF",
-  fontWeight: "bold",
-  margin: '0 10px',
-  border: '1px solid #999',
-  left: -10,
-  borderRadius: 0,
-  borderRadius: '4px',
-  float: 'right',
-  textDecoration: 'none',
-  transition: 'all linear .07s',
-  backgroundColor: 'rgba(0, 128, 128, 0.8)'
-}
-
-const styleHide = {
-  transition: 'all linear .07s',
-  padding: '6px 20px',
-  position: 'fixed',
-  width: '100%',
-  textAlign: 'center',
-  zIndex: "999",
-  bottom: -40,
-  color: "#FFF",
-  fontWeight: "bold",
-  margin: '0 10px',
-  border: '1px solid #999',
-  borderRadius: '4px',
-  float: 'right',
-  textDecoration: 'none',
-  backgroundColor: 'rgba(0, 128, 128, 0.8)',
-  left: -10,
-  borderRadius: 0
-}
-
 class Books extends Component {
   state = {
     books: [],
@@ -73,13 +34,13 @@ class Books extends Component {
     this.loadBooks(); // get all books from DB  
     const socket = socketIOClient(this.state.endpoint, { secure: true });
     socket.on('fromServer', title => {
-      console.log("fromServer",title.data);
+      //console.log("fromServer",title.data);
       this.showAlert(title.data);
     }); 
   }
 
   showAlert = message => {
-    console.log("message",message);
+    //console.log("message",message);
     this.setState({ alert: message });
     setInterval(() => {
       this.setState({ alert: "" });
@@ -261,9 +222,7 @@ class Books extends Component {
         </Row>
       </Container>
 
-      <div style={this.state.alert ? styleShow : styleHide}>
-        <i className="fa fa-save"></i> &nbsp; <u><em>{this.state.alert}</em></u> was saved ...
-      </div>
+      <Message message={this.state.alert}  />
 
       </div>
     );
