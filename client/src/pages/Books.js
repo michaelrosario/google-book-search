@@ -71,7 +71,7 @@ class Books extends Component {
 
   componentDidMount() {
     this.loadBooks(); // get all books from DB  
-    const socket = socketIOClient(this.state.endpoint);
+    const socket = socketIOClient(this.state.endpoint, { secure: true });
     socket.on('fromServer', title => {
       console.log("fromServer",title.data);
       this.showAlert(title.data);
@@ -105,7 +105,7 @@ class Books extends Component {
         books[index]._id = res.data._id;
         
         // send to socket
-        const socket = socketIOClient(this.state.endpoint);
+        const socket = socketIOClient(this.state.endpoint, { secure: true });
         socket.emit('fromReact',{ data: res.data.title });
         
         this.setState({ books });        
@@ -144,6 +144,7 @@ class Books extends Component {
           const books = res.data.items.map(data => {
             const book = {};
             let bookImage = data.volumeInfo.imageLinks ? data.volumeInfo.imageLinks.thumbnail : '';
+            bookImage = bookImage.replace("http://","https://"); // fix mixed content
             book.id = data.id;
             const checkId = obj => obj.id === book.id;
             const alreadySaved = this.state.savedBooks.filter(checkId);
@@ -173,7 +174,7 @@ class Books extends Component {
 
   render() {
 
-    const socket = socketIOClient(this.state.endpoint);
+    const socket = socketIOClient(this.state.endpoint, { secure: true });
 
     return (
       <div>
