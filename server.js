@@ -37,6 +37,10 @@ io.on('connection', socket => {
     console.log("fromReact",title);
     socket.broadcast.emit('fromServer', { data : title.data });
   });
+  socket.on('Delete', id => {
+    console.log("Delete",id);
+    socket.broadcast.emit('Delete', { data : id.data });
+  });
 });
 
 

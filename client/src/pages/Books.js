@@ -27,6 +27,7 @@ class Books extends Component {
     savedBooks: [],
     title: "",
     alert: "",
+    alertType: "",
     endpoint: "/"
   };
 
@@ -35,15 +36,38 @@ class Books extends Component {
     const socket = socketIOClient(this.state.endpoint, { secure: true });
     socket.on('fromServer', title => {
       //console.log("fromServer",title.data);
-      this.showAlert(title.data);
+      this.showAlert(title.data,"saved");
+    }); 
+    socket.on('Delete', id => { 
+      //console.log("Delete",id.data);
+      //console.log(this.state.books);
+      const { books } = this.state;
+
+      books.map((book,index) => {
+        if(book._id === id.data){
+           delete books[index]._id;
+           // show deleted message
+           this.showAlert(book.title,"deleted");
+        }
+      });
+
+      this.setState({ books });
+
+      this.loadBooks();
     }); 
   }
 
-  showAlert = message => {
+  showAlert = (message,type) => {
     //console.log("message",message);
-    this.setState({ alert: message });
+    this.setState({ 
+      alert: message, 
+      alertType: type 
+    });
     setInterval(() => {
-      this.setState({ alert: "" });
+      this.setState({ 
+        alert: "", 
+        alertType: "" 
+      });
     }, 3000);
   }
 
@@ -79,6 +103,10 @@ class Books extends Component {
       .then(res => {
         this.loadBooks();
 
+        // send to socket
+        const socket = socketIOClient(this.state.endpoint, { secure: true });
+        socket.emit('Delete',{ data: id });
+        
         // Update state on removal
         const books = this.state.books;
         delete books[index]._id;
@@ -182,8 +210,7 @@ class Books extends Component {
                             <Link style={viewBook} to={"/detail/" + book._id}> <i className="fa fa-eye"></i>  View</Link> :
                             <SaveBtn onClick={() => this.saveBook(index)} />
                           }
-                          
-
+                        
                           <h3>
                             {book.title}
                           </h3>
@@ -193,7 +220,7 @@ class Books extends Component {
                           <br />
                         </Col>
                       </Row>
-                      <Row>`
+                      <Row>
                         <Col size="md-auto sm-10">
                           {book.image ? <img src={book.image} alt="" /> : <div className="noImage">No Image</div> }
                           <br /><br />
@@ -222,7 +249,7 @@ class Books extends Component {
         </Row>
       </Container>
 
-      <Message message={this.state.alert}  />
+      <Message message={this.state.alert} type={this.state.alertType}  />
 
       </div>
     );

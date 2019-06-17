@@ -23,6 +23,7 @@ class Saved extends Component {
   state = {
     books: [],
     alert: "",
+    alertType: "",
     endpoint: "/"
   };
 
@@ -31,16 +32,30 @@ class Saved extends Component {
     const socket = socketIOClient(this.state.endpoint, { secure: true });
     socket.on('fromServer', title => {
       //console.log("fromServer",title.data);
-      this.showAlert(title.data);
+      this.showAlert(title.data,"saved");
+    });
+    socket.on('Delete', id => { 
+      //console.log("Delete",id.data);
+      //console.log(this.state.books);
+      const deletedBook = this.state.books.filter(book => book._id === id.data);
+      //console.log("deletedBook",deletedBook)
+      // show deleted message
+      if(deletedBook.length){
+        this.showAlert(deletedBook[0].title,"deleted");
+      }
+      this.loadBooks();
     }); 
   }
 
-  showAlert = message => {
+  showAlert = (message,type) => {
     //console.log("message",message);
     this.loadBooks(); 
-    this.setState({ alert: message });
+    this.setState({ 
+      alert: message,
+      alertType: type
+     });
     setInterval(() => {
-      this.setState({ alert: "" });
+      this.setState({ alert: "", alertType: "" });
     }, 3000);
   }
 
@@ -54,7 +69,12 @@ class Saved extends Component {
 
   deleteBook = id => {
     API.deleteBook(id)
-      .then(res => this.loadBooks())
+      .then(res => {
+        this.loadBooks();
+        // send to socket
+        const socket = socketIOClient(this.state.endpoint, { secure: true });
+        socket.emit('Delete',{ data: id });
+      })
       .catch(err => console.log(err));
   };
 
@@ -115,7 +135,7 @@ class Saved extends Component {
           </Col>
         </Row>
       </Container>
-      <Message message={this.state.alert}  />
+      <Message message={this.state.alert} type={this.state.alertType}  />
     </div>
     );
   }
