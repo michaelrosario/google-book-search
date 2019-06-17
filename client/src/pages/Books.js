@@ -66,7 +66,7 @@ class Books extends Component {
     savedBooks: [],
     title: "",
     alert: "",
-    endpoint: `${location.origin.replace(/^http/, 'ws')}`
+    endpoint: `${window.location.replace(/^http/, 'ws')}`
   };
 
   componentDidMount() {
