@@ -72,8 +72,8 @@ class Books extends Component {
   componentDidMount() {
     this.loadBooks(); // get all books from DB  
     const socket = socketIOClient(this.state.endpoint, { secure: true });
-    socket.on('fromServer', title => {
-      console.log("fromServer",title.data);
+    socket.on('bookTitle', title => {
+      console.log("bookTitle",title.data);
       this.showAlert(title.data);
     }); 
   }
@@ -106,7 +106,7 @@ class Books extends Component {
         
         // send to socket
         const socket = socketIOClient(this.state.endpoint, { secure: true });
-        socket.emit('fromReact',{ data: res.data.title });
+        socket.emit('bookTitle',{ data: res.data.title });
         
         this.setState({ books });        
       })
