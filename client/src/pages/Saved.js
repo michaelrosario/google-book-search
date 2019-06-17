@@ -22,7 +22,7 @@ const viewBook = {
 class Saved extends Component {
   state = {
     books: [],
-    alert,
+    alert: "",
     endpoint: "/"
   };
 
