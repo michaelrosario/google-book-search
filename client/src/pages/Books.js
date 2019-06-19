@@ -28,7 +28,7 @@ class Books extends Component {
     title: "",
     alert: "",
     alertType: "",
-    endpoint: "/"
+    endpoint: process.env.NODE_ENV === "production" ? "/" : "localhost:3001"
   };
 
   componentDidMount() {
